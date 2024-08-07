@@ -1,4 +1,11 @@
 update-config-default-values-from-server: true # true -> changes the default values every server reload to the default server values specified in server.properties or papermc configuration files
-default:
-  view-distance: 10
-  simulation-distance: 5
+view-distance:
+  server-default: 10
+  when-no-value: reset
+simulation-distance:
+  server-default: 5
+  when-no-value: reset
+# when-no-value possible options:
+# "nothing" -> will do nothing and the player will keep the last set view distance,
+# "reset" -> reset the player view distance to the server default,
+# "balance" -> set the player's server view distance to the same as set in his client.

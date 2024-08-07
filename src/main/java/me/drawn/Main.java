@@ -2,12 +2,9 @@ package me.drawn;
 
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.IntegerFlag;
-import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
-import com.sk89q.worldguard.session.SessionManager;
-import com.sk89q.worldguard.session.handler.Handler;
-import me.drawn.handlers.flag.SimulationDistanceHandler;
-import me.drawn.handlers.flag.ViewDistanceHandler;
+import me.drawn.utils.RegionScheduler;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -22,18 +19,8 @@ public class Main extends JavaPlugin {
     public static IntegerFlag simulationDistanceFlag;
 
     @Override
-    public void onEnable() {
-
+    public void onLoad() {
         l = this.getLogger();
-
-        l.info("Enabling plugin...");
-
-        this.saveDefaultConfig();
-
-        config = this.getConfig();
-
-        if(config.getBoolean("update-config-default-values-from-server"))
-            updateValues();
 
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
 
@@ -44,7 +31,7 @@ public class Main extends JavaPlugin {
             viewDistanceFlag = viewDistance;
 
         } catch (Exception ex) {
-            l.warning("Error registering flag view-distance: "+ex.getMessage());
+            l.warning("Error registering wg flag view-distance: "+ex.getMessage());
             ex.fillInStackTrace();
         }
 
@@ -55,19 +42,47 @@ public class Main extends JavaPlugin {
             simulationDistanceFlag = simulationDistance;
 
         } catch (Exception ex) {
-            l.warning("Error registering flag simulation-distance: "+ex.getMessage());
+            l.warning("Error registering wg flag simulation-distance: "+ex.getMessage());
             ex.fillInStackTrace();
         }
 
-        SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
+        // Converted to bukkit schedulers.
+        /*SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
         sessionManager.registerHandler(ViewDistanceHandler.FACTORY, null);
-        sessionManager.registerHandler(SimulationDistanceHandler.FACTORY, null);
+        sessionManager.registerHandler(SimulationDistanceHandler.FACTORY, null);*/
+    }
 
+    @Override
+    public void onDisable() {
+    }
+
+    @Override
+    public void onEnable() {
+
+        l.info("Loading plugin...");
+
+        if(!this.getServer().getPluginManager().isPluginEnabled("WorldGuard")) {
+            l.warning("This plugin REQUIRES WorldGuard to be running! Please make sure you have WorldGuard installed in this server.");
+            this.getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        l.info("Loading config file...");
+        this.saveDefaultConfig();
+
+        config = this.getConfig();
+
+        if(config.getBoolean("update-config-default-values-from-server")) {
+            l.info("Updating default values...");
+            updateValues();
+        }
+
+        Bukkit.getScheduler().runTaskTimer(this, new RegionScheduler(), 20, 40);
     }
 
     public void updateValues() {
-        config.set("default.view-distance", getServer().getViewDistance());
-        config.set("default.simulation-distance", getServer().getSimulationDistance());
+        config.set("view-distance.server-default", getServer().getViewDistance());
+        config.set("simulation-distance.server-default", getServer().getSimulationDistance());
         saveConfig();
         reloadConfig();
     }

@@ -1,10 +1,14 @@
 package me.drawn.utils;
 
-import com.sk89q.worldguard.util.profile.resolver.PaperPlayerService;
 import me.drawn.Main;
 import org.bukkit.entity.Player;
 
 public class DistanceManager {
+    public static final int defaultServerViewDistance = Main.config.getInt("view-distance.server-default", 10);
+    public static final int defaultServerSimulationDistance = Main.config.getInt("simulation-distance.server-default", 5);
+
+    public static final String viewDistanceNoValue = Main.config.getString("view-distance.when-no-value", "reset");
+    public static final String simulationDistanceNoValue = Main.config.getString("simulation-distance.when-no-value", "reset");
 
     public static void changeViewDistance(Player player, int many) {
         player.setViewDistance(many);
@@ -16,16 +20,35 @@ public class DistanceManager {
     }
 
     public static void resetViewDistance(Player player) {
-        player.setViewDistance(Main.config.getInt("default.view-distance"));
-        player.setSendViewDistance(Main.config.getInt("default.view-distance"));
+        player.setViewDistance(defaultServerViewDistance);
+        player.setSendViewDistance(defaultServerViewDistance);
     }
     public static void resetSimulationDistance(Player player) {
-        player.setSimulationDistance(Main.config.getInt("default.simulation-distance"));
+        player.setSimulationDistance(defaultServerSimulationDistance);
     }
 
     public static void resetAllDistances(Player player) {
         resetSimulationDistance(player);
         resetViewDistance(player);
+    }
+
+    // needs a rewrite later
+    public static void noViewDistanceValue(Player player) {
+        if (viewDistanceNoValue.equals("nothing"))
+            return;
+        if (viewDistanceNoValue.equals("balance"))
+            changeViewDistance(player, player.getClientViewDistance());
+        // always reset
+        resetViewDistance(player);
+    }
+
+    public static void noSimulationDistanceValue(Player player) {
+        if (simulationDistanceNoValue.equals("nothing"))
+            return;
+        if (simulationDistanceNoValue.equals("balance"))
+            changeSimulationDistance(player, player.getClientViewDistance());
+        // always reset
+        resetSimulationDistance(player);
     }
 
 }
