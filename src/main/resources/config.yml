@@ -1,0 +1,3 @@
+default:
+  view-distance: 10
+  simulation-distance: 4
