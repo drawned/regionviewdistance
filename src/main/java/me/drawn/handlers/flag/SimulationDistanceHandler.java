@@ -7,10 +7,22 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.session.MoveType;
 import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.FlagValueChangeHandler;
+import com.sk89q.worldguard.session.handler.Handler;
 import me.drawn.Main;
 import me.drawn.utils.DistanceManager;
 
 public class SimulationDistanceHandler extends FlagValueChangeHandler<Integer> {
+
+    public static final SimulationDistanceHandler.Factory FACTORY = new SimulationDistanceHandler.Factory();
+    public static class Factory extends Handler.Factory<SimulationDistanceHandler> {
+        @Override
+        public SimulationDistanceHandler create(Session session) {
+            // create an instance of a handler for the particular session
+            // if you need to pass certain variables based on, for example, the player
+            // whose session this is, do it here
+            return new SimulationDistanceHandler(session);
+        }
+    }
 
     @Override
     protected void onInitialValue(LocalPlayer localPlayer, ApplicableRegionSet applicableRegionSet, Integer integer) {
@@ -30,7 +42,7 @@ public class SimulationDistanceHandler extends FlagValueChangeHandler<Integer> {
     }
 
     public SimulationDistanceHandler(Session session) {
-        super(session, Main.viewDistanceFlag);
+        super(session, Main.simulationDistanceFlag);
     }
 
     private void handleValue(LocalPlayer player, int value) {

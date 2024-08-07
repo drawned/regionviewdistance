@@ -4,6 +4,10 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.flags.IntegerFlag;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
+import com.sk89q.worldguard.session.SessionManager;
+import com.sk89q.worldguard.session.handler.Handler;
+import me.drawn.handlers.flag.SimulationDistanceHandler;
+import me.drawn.handlers.flag.ViewDistanceHandler;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,6 +31,8 @@ public class Main extends JavaPlugin {
         this.saveDefaultConfig();
 
         config = this.getConfig();
+
+        updateValues();
 
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
 
@@ -52,6 +58,17 @@ public class Main extends JavaPlugin {
             ex.fillInStackTrace();
         }
 
+        SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
+        sessionManager.registerHandler(ViewDistanceHandler.FACTORY, null);
+        sessionManager.registerHandler(SimulationDistanceHandler.FACTORY, null);
+
+    }
+
+    public void updateValues() {
+        config.set("default.view-distance", getServer().getViewDistance());
+        config.set("default.simulation-distance", getServer().getSimulationDistance());
+        saveConfig();
+        reloadConfig();
     }
 
 }

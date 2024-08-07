@@ -18,6 +18,17 @@ import org.bukkit.World;
 
 public class ViewDistanceHandler extends FlagValueChangeHandler<Integer> {
 
+    public static final Factory FACTORY = new Factory();
+    public static class Factory extends Handler.Factory<ViewDistanceHandler> {
+        @Override
+        public ViewDistanceHandler create(Session session) {
+            // create an instance of a handler for the particular session
+            // if you need to pass certain variables based on, for example, the player
+            // whose session this is, do it here
+            return new ViewDistanceHandler(session);
+        }
+    }
+
     @Override
     protected void onInitialValue(LocalPlayer localPlayer, ApplicableRegionSet applicableRegionSet, Integer integer) {
         this.handleValue(localPlayer, integer);
