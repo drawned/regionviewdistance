@@ -1,3 +1,4 @@
+update-config-default-values-from-server: true # true -> changes the default values every server reload to the default server values specified in server.properties or papermc configuration files
 default:
   view-distance: 10
   simulation-distance: 5

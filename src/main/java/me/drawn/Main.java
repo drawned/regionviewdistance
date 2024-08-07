@@ -32,7 +32,8 @@ public class Main extends JavaPlugin {
 
         config = this.getConfig();
 
-        updateValues();
+        if(config.getBoolean("update-config-default-values-from-server"))
+            updateValues();
 
         FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
 
